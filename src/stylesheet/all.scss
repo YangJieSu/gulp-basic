@@ -1,0 +1,8 @@
+@import "functions";
+@import "helpers/variables";
+@import "mixins";
+@import 'bootstrap';
+$primary-color: blue;
+body {
+  color: $primary-color;
+}
