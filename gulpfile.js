@@ -21,13 +21,13 @@ console.log(options);
 
 //清除檔案
 gulp.task('clean', function () {
-  return gulp.src(['./.tmp', './dist'], { read: false })
+  return gulp.src(['./.tmp', './dist'], { read: false, allowEmpty: true })
     .pipe($.clean());
 });
 
 // 編譯 jade
 gulp.task('jade', function () {
-  gulp.src('./src/**/*.jade')
+  return gulp.src('./src/**/*.jade')
     .pipe($.plumber())
     ////載入 json 檔案
     .pipe($.data(function(){
@@ -84,7 +84,7 @@ gulp.task('bower', function () {
 });
 
 //暫存檔 js 資料夾內
-gulp.task('vendorJs', ['bower'], function(){
+gulp.task('vendorJs', function(){
   return gulp.src([
     './.tmp/vendors/**/*.js',
     './node_modules/bootstrap/dist/js/bootstrap.bundle.min.js'
@@ -102,23 +102,36 @@ gulp.task('image-min', () =>
     .pipe(gulp.dest('./dist/images'))
 );
 
-gulp.task('browser-sync', function () {
-  browserSync.init({
-    server: {
-      baseDir: "./dist"
-    },
-    reloadDebounce: 2000
-  });
-});
+// parallel and series
+// parallel 同時執行
+// series 依序執行
+gulp.task('build',
+  gulp.series(
+    'clean',
+    'bower',
+    'vendorJs',
+    gulp.parallel('jade', 'sass', 'js', 'image-min')
+  )
+)
 
-gulp.task('watch', function() {
-  gulp.watch('./src/**/*.jade', ['jade']);
-  gulp.watch('./src/stylesheet/**/*.scss', ['sass']);
-  gulp.watch('./src/js/**/*.js', ['js']);
-});
+gulp.task('default',
+  gulp.series(
+    'clean',
+    'bower',
+    'vendorJs',
+    gulp.parallel('jade', 'sass', 'js', 'image-min'),
+    function (done) {
+      browserSync.init({
+        server: {
+          baseDir: "./dist"
+        },
+        reloadDebounce: 2000
+      });
+      gulp.watch('./src/**/*.jade', gulp.series('jade'));
+      gulp.watch('./src/stylesheet/**/*.scss', gulp.series('sass'));
+      gulp.watch('./src/js/**/*.js', gulp.series('js'));
 
-gulp.task('build', gulpSequence('clean', 'jade', 'sass', 'js', 'vendorJs', 'image-min'))
-
-gulp.task('default', ['jade', 'sass', 'js', 'vendorJs', 'browser-sync', 'image-min','watch'])
-
-
+      done();
+    }
+  )
+)
