@@ -43,11 +43,6 @@ gulp.task('jade', function () {
 
 // 編譯 sass
 gulp.task('sass', function () {
-  var plugins = [
-    autoprefixer({
-      browsers: ['last 3 version', 'ie 6-8', 'iOS 8', 'Firefox > 20'] }),
-  ];
-
   return gulp.src('./src/stylesheet/**/*.scss')
     .pipe($.plumber())
     .pipe($.sourcemaps.init())
@@ -56,7 +51,7 @@ gulp.task('sass', function () {
       includePaths: ['./node_modules/bootstrap/scss'],        //外部載入套件
     }).on('error', $.sass.logError))
     //編譯完成
-    .pipe($.postcss(plugins))
+    .pipe($.postcss([autoprefixer()]))
     .pipe($.if(options.env === 'production' ,$.cleanCss()))
     .pipe($.sourcemaps.write('.'))
     .pipe(gulp.dest('./dist/css'))
