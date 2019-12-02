@@ -23,6 +23,12 @@ gulp.task('clean', function () {
     .pipe($.clean());
 });
 
+// icon font
+gulp.task('iconfont', () =>
+  gulp.src('./src/stylesheet/icons/**')
+    .pipe(gulp.dest('./dist/icons/'))
+);
+
 // 編譯 jade
 gulp.task('jade', function () {
   return gulp.src('./src/**/*.jade')
@@ -101,7 +107,7 @@ gulp.task('build',
   gulp.series(
     'clean',
     'vendorJs',
-    gulp.parallel('jade', 'sass', 'js', 'image-min')
+    gulp.parallel('iconfont', 'jade', 'sass', 'js', 'image-min')
   )
 )
 
@@ -109,7 +115,7 @@ gulp.task('default',
   gulp.series(
     'clean',
     'vendorJs',
-    gulp.parallel('jade', 'sass', 'js', 'image-min'),
+    gulp.parallel('iconfont', 'jade', 'sass', 'js', 'image-min'),
     function (done) {
       browserSync.init({
         server: {
