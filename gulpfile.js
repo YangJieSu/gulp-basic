@@ -4,11 +4,9 @@ var $ = require('gulp-load-plugins')();                          // 簡化載入
 // var sass = require('gulp-sass');                              // 編譯 sass
 // var plumber = require('gulp-plumber');                        // 出錯繼續執行
 // var postcss = require('gulp-postcss');                        
-var autoprefixer = require('autoprefixer');                      // 加入 css 前綴詞 
-var mainBowerFiles = require('main-bower-files');                // 產生 bower 暫存資料夾
+var autoprefixer = require('autoprefixer');                      // 加入 css 前綴詞
 var browserSync = require('browser-sync').create();              // web server 生成
 var minimist = require('minimist');                              // 自定義狀態
-var gulpSequence = require('gulp-sequence')                      // 執行順序
 
 
 //定義環境
@@ -21,7 +19,7 @@ console.log(options);
 
 //清除檔案
 gulp.task('clean', function () {
-  return gulp.src(['./.tmp', './dist'], { read: false, allowEmpty: true })
+  return gulp.src(['./dist'], { read: false, allowEmpty: true })
     .pipe($.clean());
 });
 
@@ -77,16 +75,10 @@ gulp.task('js', () =>
     .pipe(browserSync.stream())
 );
 
-// 生成 bower 暫存
-gulp.task('bower', function () {
-  return gulp.src(mainBowerFiles())
-    .pipe(gulp.dest('./.tmp/vendors'))
-});
-
 //暫存檔 js 資料夾內
 gulp.task('vendorJs', function(){
   return gulp.src([
-    './.tmp/vendors/**/*.js',
+    './node_modules/jquery/dist/jquery.js',
     './node_modules/bootstrap/dist/js/bootstrap.bundle.min.js'
   ])
     .pipe($.concat('vendors.js'))
@@ -108,7 +100,6 @@ gulp.task('image-min', () =>
 gulp.task('build',
   gulp.series(
     'clean',
-    'bower',
     'vendorJs',
     gulp.parallel('jade', 'sass', 'js', 'image-min')
   )
@@ -117,7 +108,6 @@ gulp.task('build',
 gulp.task('default',
   gulp.series(
     'clean',
-    'bower',
     'vendorJs',
     gulp.parallel('jade', 'sass', 'js', 'image-min'),
     function (done) {
@@ -130,7 +120,6 @@ gulp.task('default',
       gulp.watch('./src/**/*.jade', gulp.series('jade'));
       gulp.watch('./src/stylesheet/**/*.scss', gulp.series('sass'));
       gulp.watch('./src/js/**/*.js', gulp.series('js'));
-
       done();
     }
   )
