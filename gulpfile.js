@@ -35,7 +35,10 @@ gulp.task('jade', function () {
     .pipe($.plumber())
     ////載入 json 檔案
     .pipe($.data(function(){
-      var source = {};
+      var data = require('./src/data/data.json');
+      var source = {
+        data,
+      };
       return source;
     }))
     .pipe($.jade({
