@@ -30,7 +30,7 @@
     "gulp-sourcemaps": "^2.6.4",
     "gulp-uglify": "^3.0.1",
     "jquery": "^3.4.1",
-    "minimist": "^1.2.0"
+    "minimist": "^1.2.3"
   },
   "browserslist": [
     "last 3 version",
